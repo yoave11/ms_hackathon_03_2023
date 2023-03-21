@@ -1,15 +1,31 @@
 #Note: The openai-python library support for Azure OpenAI is in preview.
 import os
 import openai
+import os
+
 openai.api_type = "azure"
-openai.api_base = "https://connectorgpt.openai.azure.com/"
+openai.api_base = os.getenv("CONNECTION")
 openai.api_version = "2022-12-01"
-openai.api_key = "c7870848f2f64fa79b48358c9d660c8b"
-import import_data
+openai.api_key = os.getenv("KEY")
+import import_tweets
+import import_racist_data
+
 import re
 
 
 rating = 7
+sample_size = 10
+shuffle = False
+
+
+def main():
+  pos, neg = dataset_provider("racist")
+
+  print("negatives:")
+  run_statistics(neg)
+
+  print("positive:")
+  run_statistics(pos)
 
 def create_prompt(s):
   return "you are an offensive text classifire rating text beween 1 and 10,  return 1 if text rate above {} and 0 otherwise, classify the following text: \"{}\"".format(rating, re.escape(s))
@@ -62,13 +78,17 @@ def run_statistics(inputs):
   print("error texts")
   print(error_texts)
 
-sample_size=10
 
-print("negatives:")
-run_statistics(import_data.neg_input(limit=sample_size, shuffle=False))
+def dataset_provider(name):
+  match name:
+    case 'tweets':
+      return import_tweets.get_inputs(limit=sample_size, shuffle=shuffle)
 
-print("positive:")
-run_statistics(import_data.pos_input(limit=sample_size, shuffle=False))
-# print(run_prompt(s))
+    case 'racist':
+       return import_racist_data.get_inputs(limit=sample_size, shuffle=shuffle)
+
+  return;
+
+main()
 
 
