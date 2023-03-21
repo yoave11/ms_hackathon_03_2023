@@ -8,6 +8,7 @@ openai.api_key = "c7870848f2f64fa79b48358c9d660c8b"
 import import_data
 import re
 
+
 rating = 7
 
 def create_prompt(s):
@@ -61,13 +62,13 @@ def run_statistics(inputs):
   print("error texts")
   print(error_texts)
 
-
+sample_size=10
 
 print("negatives:")
-run_statistics(import_data.neg_input(20))
+run_statistics(import_data.neg_input(limit=sample_size, shuffle=False))
 
 print("positive:")
-run_statistics(import_data.pos_input(20))
+run_statistics(import_data.pos_input(limit=sample_size, shuffle=False))
 # print(run_prompt(s))
 
 
