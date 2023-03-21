@@ -1,7 +1,7 @@
 import pandas as pd
 import utils
 
-df = pd.read_csv('labeled_data.csv')
+df = pd.read_csv('datasets/labeled_data.csv')
 df = df.drop(columns=['Unnamed: 0', 'count', 'offensive_language', 'neither', 'hate_speech'])
 df = df.rename(columns={"tweet": "input"})
 df['class'] = df['class'].map(lambda x: 0 if x == 2 else 1)

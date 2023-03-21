@@ -1,5 +1,3 @@
-#Note: The openai-python library support for Azure OpenAI is in preview.
-import os
 import openai
 import os
 
@@ -9,6 +7,8 @@ openai.api_version = "2022-12-01"
 openai.api_key = os.getenv("KEY")
 import import_tweets
 import import_racist_data
+import import_ethos_data
+
 
 import re
 
@@ -16,10 +16,11 @@ import re
 rating = 7
 sample_size = 10
 shuffle = False
+threshold = 0.5
 
 
 def main():
-  pos, neg = dataset_provider("racist")
+  pos, neg = dataset_provider("ethos")
 
   print("negatives:")
   run_statistics(neg)
@@ -86,6 +87,9 @@ def dataset_provider(name):
 
     case 'racist':
        return import_racist_data.get_inputs(limit=sample_size, shuffle=shuffle)
+
+    case 'ethos':
+      return import_ethos_data.get_inputs(limit=sample_size, shuffle=shuffle, threshold=threshold)
 
   return;
 
