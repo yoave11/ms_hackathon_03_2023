@@ -2,15 +2,16 @@
 import os
 import openai
 openai.api_type = "azure"
-openai.api_base = ""
+openai.api_base = "https://connectorgpt.openai.azure.com/"
 openai.api_version = "2022-12-01"
-openai.api_key = ""
+openai.api_key = "c7870848f2f64fa79b48358c9d660c8b"
 import import_data
+import re
 
 rating = 7
 
 def create_prompt(s):
-  return "you are an offensive text classifire rating text beween 1 and 10,  return 1 if text rate above {} and 0 otherwise, classify the following text: \"{}\"".format(rating, s)
+  return "you are an offensive text classifire rating text beween 1 and 10,  return 1 if text rate above {} and 0 otherwise, classify the following text: \"{}\"".format(rating, re.escape(s))
 
 
 def run_prompt(s):
