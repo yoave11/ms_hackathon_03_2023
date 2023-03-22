@@ -1,10 +1,10 @@
 import openai
 import os
 
-openai.api_type = "azure"
-openai.api_base = os.getenv("CONNECTION")
-openai.api_version = "2022-12-01"
-openai.api_key = os.getenv("KEY")
+# openai.api_type = "azure"
+# openai.api_base = os.getenv("CONNECTION")
+# openai.api_version = "2022-12-01"
+openai.api_key = os.getenv("OPEN_API_KEY")
 import import_tweets
 import import_racist_data
 import import_ethos_data
@@ -28,21 +28,29 @@ def main():
   print("positive:")
   run_statistics(pos)
 
+
 def create_prompt(text, escape):
   return "you are an offensive text classifire rating text beween 1 and 10,  return 1 if text rate above {} and 0 otherwise, classify the following text: \"{}\"".format(rating, re.escape(text) if escape else text)
 
 
 def run_query(prompt):
   return int(openai.Completion.create(
-  engine="Test",
-  prompt=prompt,
-  temperature=0.7,
-  max_tokens=400,
-  top_p=1,
-  frequency_penalty=0,
-  presence_penalty=0,
-  best_of=1,
-  stop=None)['choices'][0]['text'].lstrip())
+  engine="text-davinci-003",
+    prompt=prompt,
+    max_tokens=1024,
+    n=1,
+    stop=None,
+    temperature=0.5)['choices'][0]['text'].lstrip())
+  # return int(openai.Completion.create(
+  # engine="Test",
+  # prompt=prompt,
+  # temperature=0.7,
+  # max_tokens=400,
+  # top_p=1,
+  # frequency_penalty=0,
+  # presence_penalty=0,
+  # best_of=1,
+  # stop=None)['choices'][0]['text'].lstrip())
 
 def run_prompt(text):
   try:
