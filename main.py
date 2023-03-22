@@ -8,7 +8,8 @@ openai.api_key = os.getenv("OPEN_API_KEY")
 import import_tweets
 import import_racist_data
 import import_ethos_data
-
+import requests
+import time
 
 import re
 
@@ -17,7 +18,8 @@ rating = 7
 sample_size = 10
 shuffle = False
 threshold = 0.5
-
+run_lambda = True
+sleep_time = 0.8
 
 def main():
   pos, neg = dataset_provider("ethos")
@@ -34,6 +36,13 @@ def create_prompt(text, escape):
 
 
 def run_query(prompt):
+  if run_lambda:
+    url = 'https://openaiha0323.azurewebsites.net/api/is-offensive?code=PhFJc7PoWk4M5KGFvVnMXmgDiE8IR-CI95Nae6XgL0-aAzFupCcI9A%3D%3D'
+    response = requests.post(url, json={"content": prompt})
+    response_json = response.json()
+    res = bool(response_json['result'])
+    return 1 if res else 0
+
   return int(openai.Completion.create(
   engine="text-davinci-003",
     prompt=prompt,
@@ -41,16 +50,6 @@ def run_query(prompt):
     n=1,
     stop=None,
     temperature=0.5)['choices'][0]['text'].lstrip())
-  # return int(openai.Completion.create(
-  # engine="Test",
-  # prompt=prompt,
-  # temperature=0.7,
-  # max_tokens=400,
-  # top_p=1,
-  # frequency_penalty=0,
-  # presence_penalty=0,
-  # best_of=1,
-  # stop=None)['choices'][0]['text'].lstrip())
 
 def run_prompt(text):
   try:
@@ -69,6 +68,7 @@ def run_openai(inputs):
     try:
       text = row['input']
       lable_output = row['class']
+      time.sleep(sleep_time)
       ai_output = run_prompt(text)
       if ai_output != lable_output:
         wrong_texts.append(text)
