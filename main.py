@@ -28,12 +28,11 @@ def main():
   print("positive:")
   run_statistics(pos)
 
-def create_prompt(s):
-  return "you are an offensive text classifire rating text beween 1 and 10,  return 1 if text rate above {} and 0 otherwise, classify the following text: \"{}\"".format(rating, re.escape(s))
+def create_prompt(text, escape):
+  return "you are an offensive text classifire rating text beween 1 and 10,  return 1 if text rate above {} and 0 otherwise, classify the following text: \"{}\"".format(rating, re.escape(text) if escape else text)
 
 
-def run_prompt(s):
-  prompt=create_prompt(s)
+def run_query(prompt):
   return int(openai.Completion.create(
   engine="Test",
   prompt=prompt,
@@ -44,6 +43,13 @@ def run_prompt(s):
   presence_penalty=0,
   best_of=1,
   stop=None)['choices'][0]['text'].lstrip())
+
+def run_prompt(text):
+  try:
+    return run_query(create_prompt(text=text, escape=False))
+  except Exception as a:
+    return run_query(create_prompt(text=text, escape=True))
+
 
 
 
@@ -65,17 +71,19 @@ def run_openai(inputs):
 
   return wrong_texts, error_texts
 
+def print_statistic(title, total, fraction):
+  print("{}: {}/{} - {}%".format(title, total, fraction, (float(total)*100/float(fraction))))
+
 def run_statistics(inputs):
   wrong_texts, error_texts = run_openai(inputs)
   size=inputs.size
   wrong_size = len(wrong_texts)
   error_size = len(error_texts)
 
-  print("success: {}/{}".format(size - wrong_size - error_size, size))
-  print("success (without errors): {}/{}".format(size - wrong_size - error_size, size - error_size))
-
-  print("wrong: {}/{}".format(wrong_size, size))
-  print("error: {}/{}".format(error_size, size))
+  print_statistic("success", size - wrong_size - error_size, size)
+  print_statistic("success (without errors)",size - wrong_size - error_size, size - error_size)
+  print_statistic("wrong",wrong_size, size)
+  print_statistic("error",error_size, size)
   print("error texts")
   print(error_texts)
 
